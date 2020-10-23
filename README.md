@@ -1,1 +1,1 @@
-This is server of the app chat using SocketIO
+Server side of the app chat (NodeJS, MongoDB, SocketIO)
