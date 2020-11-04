@@ -2,12 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { User, GetUserById } = require('./model/model.user');
-const { Room, GetRoomName } = require('./model/model.room');
+const { Room } = require('./model/model.room');
 const { 
     RoomDetail, 
-    GetAllRoomsByUserId,
     GetAllConversationsOfUser,
-    GetAllMessagesInRoom
+    GetAllMessagesInRoom,
+    GetInfoRoom
 } = require('./model/model.roomDetail');
 
 const app = express();
@@ -16,13 +16,13 @@ const PORT = 3000;
 app.use(bodyParser.json()); // Parsing application/json
 mongoose.connect("mongodb://localhost:27017/app-chat", { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Get all rooms by user id
-//app.post('/getAllRoomsByUserId', async (req, resp) => {
-    //const userId = req.body.userId;
-    //console.log(`UserId: ${ userId }`);
-    //const roomIds = await GetAllRoomsByUserId(userId);
-    //resp.json(roomIds);
-//})
+// Get info rooms by user id
+app.post('/getInfoRooms', async (req, resp) => {
+    const userId = req.body.userId;
+    console.log(`UserId: ${ userId }`);
+    const rooms = await GetInfoRoom(userId);
+    resp.json(rooms);
+})
 
 // Get all last messages of user
 app.post('/getLastMessages', async (req, resp) => {
@@ -38,14 +38,6 @@ app.post('/getMessagesInRoom', async (req, resp) => {
     console.log(`RoomId: ${ roomId }`);
     const messages = await GetAllMessagesInRoom(roomId);
     resp.json(messages);
-})
-
-// Get room name by roomId
-app.post('/getRoomName', async (req, resp) => {
-    const roomId = req.body.roomId;
-    console.log(`RoomId: ${ roomId }`);
-    const roomName = await GetRoomName(roomId);
-    resp.json(roomName);
 })
 
 app.get('/user', async (req, resp) => {

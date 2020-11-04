@@ -16,7 +16,7 @@ roomDetailSchema.virtual('formattedTime').get(function() {
 
 const RoomDetail = mongoose.model('roomDetail', roomDetailSchema, 'roomDetail');
 
-const GetAllRoomsByUserId = async userId => {
+const GetRoomIdsByUserId = async userId => {
     try {
         const rooms = await RoomDetail.distinct("roomId", { userId: userId } );
         return rooms;
@@ -28,7 +28,7 @@ const GetAllRoomsByUserId = async userId => {
 
 const GetAllConversationsOfUser = async userId => {
     try {
-        const roomIds = await GetAllRoomsByUserId(userId);
+        const roomIds = await GetRoomIdsByUserId(userId);
         // Put all roomId in array to to filter
         const arrExp = [];
         for(const roomId of roomIds) {
@@ -90,16 +90,6 @@ const FormatData = arr => {
     }
 }
 
-//const GetAllLastMessageOfUser = async userId => {
-    //const lastMessages = [];
-    //const roomIds = await GetAllRoomsByUserId(userId);
-    //for(const roomId of roomIds) {
-        //lastMessages.push(await GetOneLastMessageByRoomId(roomId));
-    //}
-    //lastMessages.sort
-    //return lastMessages;
-//}
-
 const GetAllMessagesInRoom = async roomId => {
     try {
         const messages = await RoomDetail.aggregate([
@@ -127,9 +117,28 @@ const GetAllMessagesInRoom = async roomId => {
     }
 }
 
+const GetInfoRoom = async userId => {
+    try {
+        const rooms = RoomDetail.aggregate([
+            // Stage 1 - Find all rooms of user
+            { $match: { userId: mongoose.Types.ObjectId(userId) } },
+            // Stage 2 - Group room
+            { $group: { _id: "$roomId" } },
+            // Stage 3 - find room info by roomId
+            { $lookup: { from: "room", localField: "_id", foreignField: "_id", as: "room" } },
+            // Stage 4 - clean data
+            { $replaceRoot: { newRoot: { $arrayElemAt: ["$room", 0] } } }
+        ]);
+        return rooms;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = { 
     RoomDetail,
-    GetAllRoomsByUserId,
     GetAllConversationsOfUser,
-    GetAllMessagesInRoom
+    GetAllMessagesInRoom,
+    GetInfoRoom
 }
