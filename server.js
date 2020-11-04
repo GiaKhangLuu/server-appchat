@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { User, GetUserById } = require('./model/model.user');
-const { Room } = require('./model/model.room');
+const { Room, GetRoomName } = require('./model/model.room');
 const { 
     RoomDetail, 
     GetAllConversationsOfUser,
@@ -24,8 +24,16 @@ app.post('/getInfoRooms', async (req, resp) => {
     resp.json(rooms);
 })
 
+// Get room name
+app.post('/getRoomName', async (req, resp) => {
+    const roomId = req.body.roomId;
+    console.log(`RoomId: ${ roomId }`);
+    const room = await GetRoomName(roomId);
+    resp.json(room);
+})
+
 // Get all last messages of user
-app.post('/getLastMessages', async (req, resp) => {
+app.post('/getConversations', async (req, resp) => {
     const userId = req.body.userId;
     console.log(`UserId: ${ userId }`);
     const lastMessages = await GetAllConversationsOfUser(userId);
@@ -38,6 +46,14 @@ app.post('/getMessagesInRoom', async (req, resp) => {
     console.log(`RoomId: ${ roomId }`);
     const messages = await GetAllMessagesInRoom(roomId);
     resp.json(messages);
+})
+
+// Find user
+app.post('/getUser', async (req, resp) => {
+    const userId = req.body.userId;
+    console.log(`UserId: ${ userId }`);
+    const user = await GetUserById(userId);
+    resp.json(user);
 })
 
 app.get('/user', async (req, resp) => {

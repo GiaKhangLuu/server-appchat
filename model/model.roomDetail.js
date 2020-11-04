@@ -106,7 +106,7 @@ const GetAllMessagesInRoom = async roomId => {
                 } 
             },
             // Stage 4 - clean data
-            { $project: { displayName: 1, message: 1, time: 1, roomId: 1 } },
+            { $project: { displayName: 1, message: 1, time: 1, userId: 1 } },
             // Stage 5 - sort by time
             { $sort: { time: 1 } }
         ]);

@@ -14,6 +14,17 @@ roomSchema.virtual('formattedCreateDate').get(function () {
 
 const Room = mongoose.model('room', roomSchema, 'room');
 
+const GetRoomName = async roomId => {
+    try {
+        const room = await Room.findById(roomId);
+        return room;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = {
-    Room
+    Room,
+    GetRoomName
 }
