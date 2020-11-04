@@ -16,7 +16,19 @@ const GetUserById = async userId => {
     }
 }
 
+const SearchUserByDisplayName = async displayName => {
+    try {
+        const regex = new RegExp(`^${ displayName }`);
+        const users = await User.find({ displayName: { $regex: regex } });
+        return users;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = {
     User,
-    GetUserById
+    GetUserById,
+    SearchUserByDisplayName
 }

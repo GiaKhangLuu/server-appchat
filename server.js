@@ -1,8 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { User, GetUserById } = require('./model/model.user');
-const { Room, GetRoomName } = require('./model/model.room');
+const { 
+    User, 
+    GetUserById,
+    SearchUserByDisplayName 
+} = require('./model/model.user');
+const { 
+    Room, 
+    GetRoomName 
+} = require('./model/model.room');
 const { 
     RoomDetail, 
     GetAllConversationsOfUser,
@@ -48,7 +55,7 @@ app.post('/getMessagesInRoom', async (req, resp) => {
     resp.json(messages);
 })
 
-// Find user
+// Find user by id
 app.post('/getUser', async (req, resp) => {
     const userId = req.body.userId;
     console.log(`UserId: ${ userId }`);
@@ -56,8 +63,11 @@ app.post('/getUser', async (req, resp) => {
     resp.json(user);
 })
 
-app.get('/user', async (req, resp) => {
-    const users = await User.find();
+// Search users by displayName
+app.post('/searchUser', async (req, resp) => {
+    const displayName = req.body.displayName;
+    console.log(`Display name: ${ displayName }`);
+    const users = await SearchUserByDisplayName(displayName);
     resp.json(users);
 })
 
