@@ -1,24 +1,25 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 
-const roomDetailSchema = new mongoose.Schema({
-    userId: mongoose.Types.ObjectId,
+const messageSchema = new mongoose.Schema({
+    senderId: mongoose.Types.ObjectId,
     roomId: mongoose.Types.ObjectId,
-    message: String,
+    content: String,
     time: Date
 });
 
-roomDetailSchema.set('toJSON', { virtuals: true });
+messageSchema.set('toJSON', { virtuals: true });
 
-roomDetailSchema.virtual('formattedTime').get(function() {
+messageSchema.virtual('formattedTime').get(function() {
     return moment(this.time).format('MMMM Do YYYY, h:mm:ss a');
 })
 
-const RoomDetail = mongoose.model('roomDetail', roomDetailSchema, 'roomDetail');
+const Message = mongoose.model('message', messageSchema, 'message');
 
+// Sai vi chi lay duoc room khi ma user co gui tin nhan den room do
 const GetRoomIdsByUserId = async userId => {
     try {
-        const rooms = await RoomDetail.distinct("roomId", { userId: userId } );
+        const rooms = await Message.distinct("roomId", { userId: userId } );
         return rooms;
     } catch(err) {
         console.log(err);
@@ -35,7 +36,7 @@ const GetAllConversationsOfUser = async userId => {
             const obj =  { roomId: mongoose.Types.ObjectId(roomId) } ;
             arrExp.push(obj);
         }
-        const conversations = await RoomDetail.aggregate([
+        const conversations = await Message.aggregate([
             // Stage 1 - get all roomDetails by roomId
             { $match: { $or: arrExp } },
             // Stage 2 - find last message time
@@ -92,7 +93,7 @@ const FormatData = arr => {
 
 const GetAllMessagesInRoom = async roomId => {
     try {
-        const messages = await RoomDetail.aggregate([
+        const messages = await Message.aggregate([
             // Stage 1 - get all records in room by group roomId
             { $match: { roomId: mongoose.Types.ObjectId(roomId) } },
             // Stage 2 - find user by userId in stage 1
@@ -119,7 +120,7 @@ const GetAllMessagesInRoom = async roomId => {
 
 const GetInfoRoom = async userId => {
     try {
-        const rooms = RoomDetail.aggregate([
+        const rooms = Message.aggregate([
             // Stage 1 - Find all rooms of user
             { $match: { userId: mongoose.Types.ObjectId(userId) } },
             // Stage 2 - Group room
@@ -137,7 +138,7 @@ const GetInfoRoom = async userId => {
 }
 
 module.exports = { 
-    RoomDetail,
+    Message,
     GetAllConversationsOfUser,
     GetAllMessagesInRoom,
     GetInfoRoom
