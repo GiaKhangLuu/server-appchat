@@ -16,12 +16,12 @@ const FindConversationsOfUser = async (req, resp) => {
     resp.json(conversations);
 }
 
-// Get all Messages in room
+// Get all messages in room
 const GetMessages = async (req, resp) => {
     const roomId = req.body.roomId;
     console.log(`RoomId: ${ roomId }`);
-    const Messages = await Message.GetAllMessagesInRoom(roomId);
-    resp.json(Messages);
+    const messages = await Message.GetMessagesInRoom(roomId);
+    resp.json(messages);
 }
 
 module.exports = {

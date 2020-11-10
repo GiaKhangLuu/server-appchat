@@ -17,17 +17,6 @@ messageSchema.virtual('formattedTime').get(function() {
 
 const Message = mongoose.model('message', messageSchema, 'message');
 
-// Sai vi chi lay duoc room khi ma user co gui tin nhan den room do
-const GetRoomIdsByUserId = async userId => {
-    try {
-        const rooms = await Message.distinct("roomId", { userId: userId } );
-        return rooms;
-    } catch(err) {
-        console.log(err);
-        return null;
-    }
-}
-
 const FindConversationsOfUser = async userId => {
     try {
         // Get all rooms of user
@@ -94,13 +83,13 @@ const FormatData = arr => {
     }
 }
 
-const GetAllMessagesInRoom = async roomId => {
+const GetMessagesInRoom = async roomId => {
     try {
         const messages = await Message.aggregate([
             // Stage 1 - get all records in room by group roomId
             { $match: { roomId: mongoose.Types.ObjectId(roomId) } },
-            // Stage 2 - find user by userId in stage 1
-            { $lookup: { from: "user", localField: "userId", foreignField: "_id", as: "user" } },
+            // Stage 2 - find sender by senderId in stage 1
+            { $lookup: { from: "user", localField: "senderId", foreignField: "_id", as: "user" } },
             // Stage 3 - reshape documents
             { 
                 $replaceRoot: { 
@@ -110,7 +99,7 @@ const GetAllMessagesInRoom = async roomId => {
                 } 
             },
             // Stage 4 - clean data
-            { $project: { displayName: 1, message: 1, time: 1, userId: 1 } },
+            { $project: { displayName: 1, content: 1, time: 1, senderId: 1, _id: 0 } },
             // Stage 5 - sort by time
             { $sort: { time: 1 } }
         ]);
@@ -143,6 +132,6 @@ const GetInfoRoom = async userId => {
 module.exports = { 
     Message,
     FindConversationsOfUser,
-    GetAllMessagesInRoom,
+    GetMessagesInRoom,
     GetInfoRoom
 }

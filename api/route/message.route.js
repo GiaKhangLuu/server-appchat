@@ -11,6 +11,7 @@ router.post('/getInfoRooms', messageController.GetInfoRooms);
 router.post('/conversations', messageController.FindConversationsOfUser);
 
 // Get all messages in room
-router.post('/getMessagesInRoom', messageController.GetMessages);
+// JSON response keys: content, displayName, time, senderId
+router.post('/messages', messageController.GetMessages);
 
 module.exports = router;
