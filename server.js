@@ -22,9 +22,9 @@ app.use('/api/user', userRoute);
 io.on('connection', socket => {
     //socket.name = "5f83147bd27b95f9d16bc3eb";
     console.log(`${ new Date().toLocaleTimeString() }: ${ socket.id } has connected`);
+    //console.log(socket.adapter.rooms);
     //socket.join('5f83189cd27b95f9d16bc3f0');
     //console.log(socket.rooms);
-
     socket.on('disconnect', reason => {
         console.log(`${ new Date().toLocaleTimeString() }: ${ socket.id } has disconnected because ${ reason }`);
     })

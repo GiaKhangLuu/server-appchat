@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
+const Room = require('./room.model');
 
 const messageSchema = new mongoose.Schema({
     senderId: mongoose.Types.ObjectId,
@@ -27,14 +28,16 @@ const GetRoomIdsByUserId = async userId => {
     }
 }
 
-const GetAllConversationsOfUser = async userId => {
+const FindConversationsOfUser = async userId => {
     try {
-        const roomIds = await GetRoomIdsByUserId(userId);
-        // Put all roomId in array to to filter
+        // Get all rooms of user
+        const roomIds = await Room.FindRoomsOfUser(userId);
+        // Put all roomId in array to filter
         const arrExp = [];
         for(const roomId of roomIds) {
-            const obj =  { roomId: mongoose.Types.ObjectId(roomId) } ;
-            arrExp.push(obj);
+            const _id = roomId._id.toString();
+            const expression =  { roomId: mongoose.Types.ObjectId(_id) } ;
+            arrExp.push(expression);
         }
         const conversations = await Message.aggregate([
             // Stage 1 - get all roomDetails by roomId
@@ -44,24 +47,24 @@ const GetAllConversationsOfUser = async userId => {
                 $group: {
                     _id: "$roomId", 
                     lastMessageTime: { $max: "$time" }, 
-                    messages: { $push: { message: "$message", time: "$time" } } 
+                    contents: { $push: { content: "$content", time: "$time" } } 
                 } 
             },
             // Stage 3 - find room name by roomId
             { 
                 $lookup: {
-                    from: "room", localField: "_id", foreignField: "_id", as: "room"
+                    from: "room", localField: "_id", foreignField: "_id", as: "roomInfo"
                 }
             },
             // Stage 4 - get last message and message time
             { 
                 $project: { 
-                    room: 1, 
-                    messages: {
+                    "roomInfo.name": 1, 
+                    contents: {
                         $filter: {
-                            input: "$messages",
-                            as: "mess",
-                            cond: { $eq: ["$$mess.time", "$lastMessageTime"] }
+                            input: "$contents",
+                            as: "content",
+                            cond: { $eq: ["$$content.time", "$lastMessageTime"] }
                         }
                     }
                 }
@@ -70,7 +73,7 @@ const GetAllConversationsOfUser = async userId => {
             { 
                 $replaceRoot: { 
                     newRoot: { 
-                        $mergeObjects: [{ $arrayElemAt: ["$room", 0] }, { $arrayElemAt: ["$messages", 0] }] 
+                        $mergeObjects: [{ roomId: "$_id" }, { $arrayElemAt: ["$roomInfo", 0] }, { $arrayElemAt: ["$contents", 0] }] 
                     } 
                 } 
             },
@@ -139,7 +142,7 @@ const GetInfoRoom = async userId => {
 
 module.exports = { 
     Message,
-    GetAllConversationsOfUser,
+    FindConversationsOfUser,
     GetAllMessagesInRoom,
     GetInfoRoom
 }

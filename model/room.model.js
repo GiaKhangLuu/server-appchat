@@ -22,9 +22,20 @@ const GetRoomName = async roomId => {
         console.log(err);
         return null;
     }
+};
+
+const FindRoomsOfUser = async userId => {
+    try {
+        const roomIds = await Room.find({ "members": mongoose.Types.ObjectId(userId) }, { _id: 1 }) ;
+        return roomIds;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
 }
 
 module.exports = {
     Room,
-    GetRoomName
+    GetRoomName,
+    FindRoomsOfUser
 }

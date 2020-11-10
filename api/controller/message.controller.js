@@ -9,11 +9,11 @@ const GetInfoRooms = async (req, resp) => {
 }
 
 // Get all conversations of user
-const GetConversations = async (req, resp) => {
+const FindConversationsOfUser = async (req, resp) => {
     const userId = req.body.userId;
     console.log(`UserId: ${ userId }`);
-    const lastMessages = await Message.GetAllConversationsOfUser(userId);
-    resp.json(lastMessages);
+    const conversations = await Message.FindConversationsOfUser(userId);
+    resp.json(conversations);
 }
 
 // Get all Messages in room
@@ -26,6 +26,6 @@ const GetMessages = async (req, resp) => {
 
 module.exports = {
     GetInfoRooms,
-    GetConversations,
+    FindConversationsOfUser,
     GetMessages
 }
