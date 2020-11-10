@@ -34,8 +34,36 @@ const FindRoomsOfUser = async userId => {
     }
 }
 
+const GetMemberDisplayName = async (roomId, userId) => {
+    try {
+        const user = await Room.aggregate([
+            // Stage 1: find room by roomId
+            { $match: { _id: mongoose.Types.ObjectId(roomId) } },
+            // Stage 2: filter user is not user who requests
+            { $project: {
+                members: { 
+                    $filter: { 
+                        input: "$members", 
+                        as: "member", 
+                        cond: { $not: [ 
+                            { $eq: ["$$member", mongoose.Types.ObjectId(userId)] } 
+                        ] } 
+                    } 
+                }
+            } },
+            { $lookup: { from: "user", localField: "members", foreignField: "_id", as: "user" } },
+            { $replaceRoot: { newRoot: { $arrayElemAt: ["$user", 0] } } }
+        ]);
+        return user[0];
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = {
     Room,
     GetRoomName,
-    FindRoomsOfUser
+    FindRoomsOfUser,
+    GetMemberDisplayName
 }
