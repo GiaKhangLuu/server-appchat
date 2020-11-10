@@ -14,16 +14,6 @@ roomSchema.virtual('formattedCreateDate').get(function () {
 
 const Room = mongoose.model('room', roomSchema, 'room');
 
-const GetRoomName = async roomId => {
-    try {
-        const room = await Room.findById(roomId);
-        return room;
-    } catch(err) {
-        console.log(err);
-        return null;
-    }
-};
-
 const FindRoomsOfUser = async userId => {
     try {
         const roomIds = await Room.find({ "members": mongoose.Types.ObjectId(userId) }, { _id: 1 }) ;
@@ -63,7 +53,6 @@ const GetMemberDisplayName = async (roomId, userId) => {
 
 module.exports = {
     Room,
-    GetRoomName,
     FindRoomsOfUser,
     GetMemberDisplayName
 }
