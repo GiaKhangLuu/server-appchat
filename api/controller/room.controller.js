@@ -7,6 +7,14 @@ const GetMemberDisplayName = async (req, resp) => {
     resp.json(user);
 }
 
+const FindSingleChat  = async (req, resp) => {
+    const userId = req.body.userId;
+    const searchedUserId = req.body.searchedUserId;
+    const roomId = await Room.FindSingleChat(userId, searchedUserId);
+    resp.json(roomId);
+}
+
 module.exports = {
-    GetMemberDisplayName
+    GetMemberDisplayName,
+    FindSingleChat
 }

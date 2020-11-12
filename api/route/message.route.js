@@ -7,11 +7,11 @@ const router = express.Router();
 router.post('/getInfoRooms', messageController.GetInfoRooms);
 
 // Get all conversations of user 
-// JSON response keys: roomId, name, content, time
+// JSON response : [{ roomId, name, content, time }, ... ]
 router.post('/conversations', messageController.FindConversationsOfUser);
 
 // Get all messages in room
-// JSON response keys: content, displayName, time, senderId
+// JSON response : [{ content, displayName, time, senderId }, ... ]
 router.post('/messages', messageController.GetMessages);
 
 module.exports = router;

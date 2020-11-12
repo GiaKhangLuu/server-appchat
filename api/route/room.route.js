@@ -7,4 +7,8 @@ const router = express.Router();
 // JSON response keys: _id, displayName
 router.post('/memberDisplayName', roomController.GetMemberDisplayName);
 
+// Get single chat 
+// JSON response keys: [{ _id }]
+router.post('/singleChat', roomController.FindSingleChat);
+
 module.exports = router;

@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/getUser', userController.GetUser);
 
 // Search users by displayName
-// JSON response keys: _id, displayName
+// JSON response keys: [{ _id, displayName }, ... ]
 router.post('/searchUsers', userController.SearchUserByDisplayName);
 
 module.exports = router;

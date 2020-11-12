@@ -51,8 +51,29 @@ const GetMemberDisplayName = async (roomId, userId) => {
     }
 }
 
+const FindSingleChat = async (userId, searchedUserId) => {
+    if(userId === searchedUserId) {
+        return [];
+    }
+    try {
+        const roomId = await Room.aggregate([
+            { $match: { $and: [
+                { members: mongoose.Types.ObjectId(userId) }, 
+                { members: mongoose.Types.ObjectId(searchedUserId)},
+                { members: { $size: 2 } }
+            ] } },
+            { $project: { _id: 1 } }
+        ])
+        return roomId;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = {
     Room,
     FindRoomsOfUser,
-    GetMemberDisplayName
+    GetMemberDisplayName,
+    FindSingleChat
 }
