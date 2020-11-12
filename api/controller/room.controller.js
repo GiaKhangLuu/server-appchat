@@ -1,5 +1,6 @@
 const Room = require('../../model/room.model');
 
+// Get display name of your friend to set title of action bar
 const GetMemberDisplayName = async (req, resp) => {
     const roomId = req.body.roomId;
     const userId = req.body.userId;
@@ -7,6 +8,7 @@ const GetMemberDisplayName = async (req, resp) => {
     resp.json(user);
 }
 
+// Find single chat group of two user 
 const FindSingleChat  = async (req, resp) => {
     const userId = req.body.userId;
     const searchedUserId = req.body.searchedUserId;

@@ -8,7 +8,7 @@ const GetInfoRooms = async (req, resp) => {
     resp.json(rooms);
 }
 
-// Get all conversations of user
+// Get all conversations of user to show in message fragment
 const FindConversationsOfUser = async (req, resp) => {
     const userId = req.body.userId;
     console.log(`UserId: ${ userId }`);
@@ -16,7 +16,7 @@ const FindConversationsOfUser = async (req, resp) => {
     resp.json(conversations);
 }
 
-// Get all messages in room
+// Get all messages in room to show in message activity
 const GetMessages = async (req, resp) => {
     const roomId = req.body.roomId;
     console.log(`RoomId: ${ roomId }`);

@@ -7,6 +7,7 @@ const GetUser = async (req, resp) => {
     resp.json(user);
 }
 
+// Find user by display name to show in search fragment
 const SearchUserByDisplayName = async (req, resp) => {
     const displayName = req.body.displayName;
     console.log(`Display name: ${ displayName }`);
