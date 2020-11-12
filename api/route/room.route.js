@@ -13,6 +13,6 @@ router.post('/singleChat', roomController.FindSingleChat);
 
 // Get rooms of user
 // JSON response: [{ _id, name, createDate }, ...]
-//router.post('/rooms', roomController.FindRoomsOfUser);
+router.post('/multiMembersRooms', roomController.FindMultiMembersRooms);
 
 module.exports = router;

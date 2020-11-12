@@ -71,9 +71,28 @@ const FindSingleChat = async (userId, searchedUserId) => {
     }
 }
 
+const FindMultiMembersRooms = async userId => {
+    try {
+        const rooms = Room.aggregate([
+            { $match: { 
+                $and: [
+                       { members: mongoose.Types.ObjectId(userId) },
+                       { members: { $not: { $size: 2 } } } 
+                ] } 
+            },
+            { $project: { name: 1, createDate: 1 } }
+        ]);
+        return rooms;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = {
     Room,
     FindAllRoomsOfUser,
     GetMemberDisplayNameInSingleChat,
-    FindSingleChat
+    FindSingleChat,
+    FindMultiMembersRooms
 }

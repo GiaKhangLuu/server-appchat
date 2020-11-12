@@ -17,14 +17,14 @@ const FindSingleChat  = async (req, resp) => {
 }
 
 // Find rooms of user to show in group fragment
-const FindRoomsOfUser = async (req, resp) => {
+const FindMultiMembersRooms = async (req, resp) => {
     const userId = req.body.userId;
-    //const rooms = await Room.FindRoomsOfUser(userId);
+    const rooms = await Room.FindMultiMembersRooms(userId);
     resp.json(rooms);
 }
 
 module.exports = {
     GetMemberDisplayNameInSingleChat,
     FindSingleChat,
-    FindRoomsOfUser
+    FindMultiMembersRooms
 }
