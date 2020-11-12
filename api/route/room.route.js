@@ -4,11 +4,15 @@ const roomController = require('../controller/room.controller');
 const router = express.Router();
 
 // Get member display name
-// JSON response keys: _id, displayName
-router.post('/memberDisplayName', roomController.GetMemberDisplayName);
+// JSON response : { _id, displayName }
+router.post('/memberDisplayName', roomController.GetMemberDisplayNameInSingleChat);
 
 // Get single chat 
-// JSON response keys: [{ _id }]
+// JSON response : [{ _id }]
 router.post('/singleChat', roomController.FindSingleChat);
+
+// Get rooms of user
+// JSON response: [{ _id, name, createDate }, ...]
+//router.post('/rooms', roomController.FindRoomsOfUser);
 
 module.exports = router;

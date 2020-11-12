@@ -20,7 +20,7 @@ const Message = mongoose.model('message', messageSchema, 'message');
 const FindConversationsOfUser = async userId => {
     try {
         // Get all rooms of user
-        const roomIds = await Room.FindRoomsOfUser(userId);
+        const roomIds = await Room.FindAllRoomsOfUser(userId);
         // Put all roomId in array to filter
         const arrExp = [];
         for(const roomId of roomIds) {

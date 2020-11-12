@@ -14,7 +14,7 @@ roomSchema.virtual('formattedCreateDate').get(function () {
 
 const Room = mongoose.model('room', roomSchema, 'room');
 
-const FindRoomsOfUser = async userId => {
+const FindAllRoomsOfUser = async userId => {
     try {
         const roomIds = await Room.find({ "members": mongoose.Types.ObjectId(userId) }, { _id: 1 }) ;
         return roomIds;
@@ -24,7 +24,7 @@ const FindRoomsOfUser = async userId => {
     }
 }
 
-const GetMemberDisplayName = async (roomId, userId) => {
+const GetMemberDisplayNameInSingleChat = async (roomId, userId) => {
     try {
         const user = await Room.aggregate([
             // Stage 1: find room by roomId
@@ -73,7 +73,7 @@ const FindSingleChat = async (userId, searchedUserId) => {
 
 module.exports = {
     Room,
-    FindRoomsOfUser,
-    GetMemberDisplayName,
+    FindAllRoomsOfUser,
+    GetMemberDisplayNameInSingleChat,
     FindSingleChat
 }

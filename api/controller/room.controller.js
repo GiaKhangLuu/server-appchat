@@ -1,10 +1,10 @@
 const Room = require('../../model/room.model');
 
 // Get display name of your friend to set title of action bar
-const GetMemberDisplayName = async (req, resp) => {
+const GetMemberDisplayNameInSingleChat = async (req, resp) => {
     const roomId = req.body.roomId;
     const userId = req.body.userId;
-    const user = await Room.GetMemberDisplayName(roomId, userId);
+    const user = await Room.GetMemberDisplayNameInSingleChat(roomId, userId);
     resp.json(user);
 }
 
@@ -16,7 +16,15 @@ const FindSingleChat  = async (req, resp) => {
     resp.json(roomId);
 }
 
+// Find rooms of user to show in group fragment
+const FindRoomsOfUser = async (req, resp) => {
+    const userId = req.body.userId;
+    //const rooms = await Room.FindRoomsOfUser(userId);
+    resp.json(rooms);
+}
+
 module.exports = {
-    GetMemberDisplayName,
-    FindSingleChat
+    GetMemberDisplayNameInSingleChat,
+    FindSingleChat,
+    FindRoomsOfUser
 }
