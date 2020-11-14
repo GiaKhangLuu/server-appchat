@@ -23,11 +23,11 @@ const FindMultiMembersRooms = async (req, resp) => {
     resp.json(rooms);
 }
 
-// Pull user from room when user click leave room
-const PullUserFromRoom = async (req, resp) => {
+// Remove user from room when user click leave room
+const RemoveUserFromRoom = async (req, resp) => {
     const userId = req.body.userId;
     const roomId = req.body.roomId;
-    const rs = await Room.PullUserFromRoom(userId, roomId);
+    const rs = await Room.RemoveUserFromRoom(userId, roomId);
     resp.json(rs);
 }
 
@@ -35,5 +35,5 @@ module.exports = {
     GetMemberDisplayNameInSingleChat,
     FindSingleChat,
     FindMultiMembersRooms,
-    PullUserFromRoom
+    RemoveUserFromRoom
 }

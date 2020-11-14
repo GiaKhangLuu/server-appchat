@@ -16,6 +16,6 @@ router.post('/singleChat', roomController.FindSingleChat);
 router.post('/multiMembersRooms', roomController.FindMultiMembersRooms);
 
 // Pull user from room
-router.post('/leaveRoom', roomController.PullUserFromRoom);
+router.post('/leaveRoom', roomController.RemoveUserFromRoom);
 
 module.exports = router;

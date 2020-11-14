@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 
+mongoose.set('useFindAndModify', false);
+
 const roomSchema = new mongoose.Schema({
     name: String,
     createDate: Date,
@@ -52,21 +54,6 @@ const GetMemberDisplayNameInSingleChat = async (roomId, userId) => {
     }
 }
 
-const PullUserFromRoom = async (userId, roomId) => {
-    try {
-        console.log(userId);
-        console.log(roomId);
-        const rs = await Room.findByIdAndUpdate(roomId, 
-            { $pull: { members: mongoose.Types.ObjectId(userId) } },
-            { new: true })
-        //const rs = await Room.find({ "members": mongoose.Types.ObjectId(userId) });
-        return rs;
-    } catch(err) {
-        console.log(err);
-        return null;
-    }
-}
-
 const FindSingleChat = async (userId, searchedUserId) => {
     if(userId === searchedUserId) {
         return [];
@@ -105,11 +92,24 @@ const FindMultiMembersRooms = async userId => {
     }
 }
 
+const RemoveUserFromRoom = async (userId, roomId) => {
+    try {
+        const rs = await Room.findByIdAndUpdate(roomId, 
+            { $pull: { members: mongoose.Types.ObjectId(userId) } },
+            { new: true })
+        //const rs = await Room.find({ "members": mongoose.Types.ObjectId(userId) });
+        return rs;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = {
     Room,
     FindAllRoomsOfUser,
     GetMemberDisplayNameInSingleChat,
     FindSingleChat,
     FindMultiMembersRooms,
-    PullUserFromRoom
+    RemoveUserFromRoom
 }
