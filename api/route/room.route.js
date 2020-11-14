@@ -15,4 +15,7 @@ router.post('/singleChat', roomController.FindSingleChat);
 // JSON response: [{ _id, name, createDate }, ...]
 router.post('/multiMembersRooms', roomController.FindMultiMembersRooms);
 
+// Pull user from room
+router.post('/leaveRoom', roomController.PullUserFromRoom);
+
 module.exports = router;

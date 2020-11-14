@@ -3,7 +3,8 @@ const moment = require('moment');
 
 const roomSchema = new mongoose.Schema({
     name: String,
-    createDate: Date
+    createDate: Date,
+    members: Array
 });
 
 roomSchema.set('toJSON', { virtuals: true });
@@ -45,6 +46,21 @@ const GetMemberDisplayNameInSingleChat = async (roomId, userId) => {
             { $replaceRoot: { newRoot: { $arrayElemAt: ["$user", 0] } } }
         ]);
         return user[0];
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
+const PullUserFromRoom = async (userId, roomId) => {
+    try {
+        console.log(userId);
+        console.log(roomId);
+        const rs = await Room.findByIdAndUpdate(roomId, 
+            { $pull: { members: mongoose.Types.ObjectId(userId) } },
+            { new: true })
+        //const rs = await Room.find({ "members": mongoose.Types.ObjectId(userId) });
+        return rs;
     } catch(err) {
         console.log(err);
         return null;
@@ -94,5 +110,6 @@ module.exports = {
     FindAllRoomsOfUser,
     GetMemberDisplayNameInSingleChat,
     FindSingleChat,
-    FindMultiMembersRooms
+    FindMultiMembersRooms,
+    PullUserFromRoom
 }
