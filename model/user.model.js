@@ -1,10 +1,25 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    displayName: String
+    displayName: String,
+    accountName: String,
+    password: String
 });
 
 const User = new mongoose.model('user', userSchema, 'user');
+
+const Login = async (accountName, password) => {
+    try {
+        const user = await User.findOne({ accountName: accountName, password: password});
+        if(user == null) {
+            return {};
+        } 
+        return user;
+    } catch {
+        console.log(err);
+        return {};
+    }
+}
 
 const GetUserById = async userId => {
     try {
@@ -29,6 +44,7 @@ const SearchUserByDisplayName = async displayName => {
 
 module.exports = {
     User,
+    Login,
     GetUserById,
     SearchUserByDisplayName
 }

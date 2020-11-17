@@ -3,6 +3,9 @@ const userController = require('../controller/user.controller');
 
 const router = express.Router();
 
+// Login
+router.post('/login', userController.Login);
+
 // Find user by id
 router.post('/getUser', userController.GetUser);
 
