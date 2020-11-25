@@ -106,7 +106,6 @@ const RemoveUserFromRoom = async (userId, roomId) => {
 }
 
 module.exports = {
-    Room,
     FindAllRoomsOfUser,
     GetMemberDisplayNameInSingleChat,
     FindSingleChat,

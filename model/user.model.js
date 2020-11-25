@@ -43,7 +43,6 @@ const SearchUserByDisplayName = async displayName => {
 }
 
 module.exports = {
-    User,
     Login,
     GetUserById,
     SearchUserByDisplayName

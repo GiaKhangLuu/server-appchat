@@ -17,6 +17,10 @@ messageSchema.virtual('formattedTime').get(function() {
 
 const Message = mongoose.model('message', messageSchema, 'message');
 
+const AddMessage = async (senderId, roomId, content, time) => {
+    await Message.create({ roomId: roomId, time: time, content: content, senderId: senderId });
+}
+
 const FindConversationsOfUser = async userId => {
     try {
         // Get all rooms of user
@@ -130,8 +134,8 @@ const GetInfoRoom = async userId => {
 }
 
 module.exports = { 
-    Message,
     FindConversationsOfUser,
     GetMessagesInRoom,
-    GetInfoRoom
+    GetInfoRoom,
+    AddMessage
 }
