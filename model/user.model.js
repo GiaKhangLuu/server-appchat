@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
     displayName: String,
     accountName: String,
     password: String
-});
+}, { versionKey: false });
 
 const User = new mongoose.model('user', userSchema, 'user');
 
@@ -42,8 +42,22 @@ const SearchUserByDisplayName = async displayName => {
     }
 }
 
+const GetUserDisplayName = async userId => {
+    try {
+        const user = await User.findById(userId);
+        if(user != null) {
+            return user.displayName;
+        }
+        return null;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = {
     Login,
     GetUserById,
-    SearchUserByDisplayName
+    SearchUserByDisplayName,
+    GetUserDisplayName
 }
