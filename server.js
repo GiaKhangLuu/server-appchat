@@ -4,9 +4,11 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+
 const userRoute = require('./api/route/user.route');
 const roomRoute = require('./api/route/room.route');
 const messageRoute = require('./api/route/message.route');
+const handleSocket = require('./socket.js');
 
 const PORT = 3000;
 
@@ -20,14 +22,26 @@ app.use('/api/message', messageRoute);
 app.use('/api/user', userRoute);
 
 io.on('connection', socket => {
-    //socket.name = "5f83147bd27b95f9d16bc3eb";
-    console.log(`${ new Date().toLocaleTimeString() }: ${ socket.id } has connected`);
-    //console.log(socket.adapter.rooms);
-    //socket.join('5f83189cd27b95f9d16bc3f0');
-    //console.log(socket.rooms);
+    // Set up socket
+    socket.on('setUpSocket', async userId => {
+        handleSocket.SetSocketName(socket, userId);
+        console.log(`${ new Date().toLocaleTimeString() }: ${ socket.id } - ${ socket.name } has connected`);
+        await handleSocket.JoinRooms(socket, userId);
+        console.log(socket.adapter.rooms);
+        console.log(socket.rooms);
+    });
+
+    // Handle user send message
+    socket.on('user_send_message', obj => {
+        handleSocket.HandleUserSendMessage(io, obj);
+    });
+
+
+
+    // Check disconnected
     socket.on('disconnect', reason => {
         console.log(`${ new Date().toLocaleTimeString() }: ${ socket.id } has disconnected because ${ reason }`);
-    })
+    });
 })
 
 // Test web platform
