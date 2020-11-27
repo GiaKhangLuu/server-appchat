@@ -3,7 +3,15 @@ const message = require('./model/message.model');
 const room = require('./model/room.model');
 const user = require('./model/user.model');
 
-// Support method
+/* SUPPORT METHODS */
+
+// Get all rooms of user
+const FetchRooms = async userId => {
+    const rooms = await room.FindAllRoomsOfUser(userId);
+    return rooms;
+}
+
+
 const SendMessageBack = async (io, data) => {
     const room = `room: ${ data.roomId }`;
     console.log(`Room: ${ room }`);
@@ -21,8 +29,16 @@ const AddMessage = async data => {
     await message.AddMessage(senderId, roomId, content, time);
 }
 
+const UpdateConversation = async (io, data) => {
+    const userId = data.senderId;
+    const room = `room: ${ data.roomId }`;
+    const convers = await message.FindConversationsOfUser(userId);
+    const latestConver = convers[0];
+    console.log(latestConver);
+    io.to(room).emit('update_conversation', latestConver);
+}
 
-// Socket method
+/* SOCKET METHODS */
 
 // Set socket's name by userId
 const SetSocketName = (socket, idUser) => {
@@ -38,17 +54,12 @@ const JoinRooms = async (socket, userId) => {
     });
 }
 
-// Get all rooms of user
-const FetchRooms = async userId => {
-    const rooms = await room.FindAllRoomsOfUser(userId);
-    return rooms;
-}
-
 // Handle when user send message
 const HandleUserSendMessage = async (io, data) => {
     console.log(`Message: ${ data.content }`);
-    AddMessage(data);
+    await AddMessage(data);
     SendMessageBack(io, data);
+    UpdateConversation(io, data);
 }
 
 module.exports = {
