@@ -4,7 +4,13 @@ const Room = require('./room.model');
 
 const messageSchema = new mongoose.Schema({
     senderId: mongoose.Types.ObjectId,
-    roomId: mongoose.Types.ObjectId,
+    roomId: {
+        type: mongoose.Types.ObjectId,
+        validate: {
+            validator: roomId => roomId != null,
+            message: "RoomId is null"
+        }
+    },
     content: String,
     time: Date
 });

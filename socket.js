@@ -57,9 +57,13 @@ const JoinRooms = async (socket, userId) => {
 // Handle when user send message
 const HandleUserSendMessage = async (io, data) => {
     console.log(`Message: ${ data.content }`);
-    await AddMessage(data);
-    SendMessageBack(io, data);
-    UpdateConversation(io, data);
+    try {
+        await AddMessage(data);
+        SendMessageBack(io, data);
+        UpdateConversation(io, data);
+    } catch(err) {
+        console.log(err.toString());
+    }
 }
 
 module.exports = {
