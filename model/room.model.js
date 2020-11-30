@@ -106,9 +106,13 @@ const RemoveUserFromRoom = async (userId, roomId) => {
 }
 
 const CreateRoom = async (name, members) => {
+    const processed_members = [];
+    for (var member of members) {
+        processed_members.push(mongoose.Types.ObjectId(member));
+    }
     var room = new Room();
     room.name = name;
-    room.members = members;
+    room.members = processed_members;
     room.createDate = new Date();
     await Room.create(room);
     return room._id;
