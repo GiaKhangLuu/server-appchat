@@ -31,9 +31,17 @@ const RemoveUserFromRoom = async (req, resp) => {
     resp.json(rs);
 }
 
+const CreateRoom = async (req, resp) => {
+    const members = req.body.members;
+    const name = req.body.name;
+    const rs = await Room.CreateRoom(name, members);
+    resp.json(rs);
+}
+
 module.exports = {
     GetMemberDisplayNameInSingleChat,
     FindSingleChat,
     FindMultiMembersRooms,
-    RemoveUserFromRoom
+    RemoveUserFromRoom,
+    CreateRoom
 }

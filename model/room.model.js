@@ -105,10 +105,20 @@ const RemoveUserFromRoom = async (userId, roomId) => {
     }
 }
 
+const CreateRoom = async (name, members) => {
+    var room = new Room();
+    room.name = name;
+    room.members = members;
+    room.createDate = new Date();
+    await Room.create(room);
+    return room._id;
+}
+
 module.exports = {
     FindAllRoomsOfUser,
     GetMemberDisplayNameInSingleChat,
     FindSingleChat,
     FindMultiMembersRooms,
-    RemoveUserFromRoom
+    RemoveUserFromRoom,
+    CreateRoom
 }

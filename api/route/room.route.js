@@ -18,4 +18,6 @@ router.post('/multiMembersRooms', roomController.FindMultiMembersRooms);
 // Pull user from room
 router.post('/leaveRoom', roomController.RemoveUserFromRoom);
 
+router.post('/createRoom', roomController.CreateRoom);
+
 module.exports = router;
