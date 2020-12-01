@@ -5,12 +5,17 @@ const user = require('./model/user.model');
 
 /* SUPPORT METHODS */
 
+
+// Set socket's name by userId
+const SetSocketName = async (socket, idUser) => {
+    socket.name = idUser;
+}
+
 // Get all rooms of user
 const FetchRooms = async userId => {
     const rooms = await room.FindAllRoomsOfUser(userId);
     return rooms;
 }
-
 
 const SendMessageBack = async (io, data) => {
     const room = `room: ${ data.roomId }`;
@@ -40,11 +45,6 @@ const UpdateConversation = async (io, data) => {
 
 /* SOCKET METHODS */
 
-// Set socket's name by userId
-const SetSocketName = (socket, idUser) => {
-    socket.name = idUser;
-}
-
 // Each socket joins to room by roomId
 const JoinRooms = async (socket, userId) => {
     const rooms = await FetchRooms(userId);
@@ -66,8 +66,25 @@ const HandleUserSendMessage = async (io, data) => {
     }
 }
 
+const AddUsersToNewRoom = async (io, data) => {
+    const members = data.members;
+    const room = `room: ${ data.roomId }`;
+    // The default namespace is '/'
+    ns = io.of('/');
+    // api namespace.connected return an obj contains all sockets connected (version 2.*)
+    for(var id in ns.connected) {
+        // Id is the id of the socket
+        const socket = ns.connected[id];
+        if(members.indexOf(socket.name) >= 0) {
+            socket.join(room);
+        }
+    }
+    //io.to(room).emit('new_room', "New room");
+}
+
 module.exports = {
     SetSocketName,
     JoinRooms,
-    HandleUserSendMessage
+    HandleUserSendMessage,
+    AddUsersToNewRoom
 }

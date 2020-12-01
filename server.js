@@ -9,6 +9,7 @@ const userRoute = require('./api/route/user.route');
 const roomRoute = require('./api/route/room.route');
 const messageRoute = require('./api/route/message.route');
 const handleSocket = require('./socket.js');
+const { timeLog } = require('console');
 
 const PORT = 3000;
 
@@ -27,13 +28,28 @@ io.on('connection', socket => {
         handleSocket.SetSocketName(socket, userId);
         console.log(`${ new Date().toLocaleTimeString() }: ${ socket.id } - ${ socket.name } has connected`);
         await handleSocket.JoinRooms(socket, userId);
-        console.log(socket.adapter.rooms);
-        console.log(socket.rooms);
+        //const rooms = io.sockets.adapter.rooms;
+        //var count = 0;
+        //for(var id in rooms) {
+            //if(id.indexOf('room') >= 0) ++count;
+        //}
+        //console.log(count);
     });
 
+    // Add user to new room
+    socket.on('create_new_room', data => {
+        handleSocket.AddUsersToNewRoom(io, data);
+        //const rooms = io.sockets.adapter.rooms;
+        //var count = 0;
+        //for(var id in rooms) {
+            //if(id.indexOf('room') >= 0) ++count;
+        //}
+        //console.log(count);
+    })
+
     // Handle user send message
-    socket.on('user_send_message', obj => {
-        handleSocket.HandleUserSendMessage(io, obj);
+    socket.on('user_send_message', async obj => {
+        await handleSocket.HandleUserSendMessage(io, obj);
     });
 
 

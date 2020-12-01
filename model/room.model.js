@@ -115,7 +115,7 @@ const CreateRoom = async (name, members) => {
     room.members = processed_members;
     room.createDate = new Date();
     await Room.create(room);
-    return room._id;
+    return room;
 }
 
 module.exports = {
