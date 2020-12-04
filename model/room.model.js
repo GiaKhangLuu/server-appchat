@@ -81,7 +81,7 @@ const FindMultiMembersRooms = async userId => {
             { $match: { 
                 $and: [
                        { members: mongoose.Types.ObjectId(userId) },
-                       { members: { $not: { $size: 2 } } } 
+                       { name: { $not: { $eq: "" } } }
                 ] } 
             },
             { $project: { name: 1, createDate: 1 } }
