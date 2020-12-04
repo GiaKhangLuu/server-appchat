@@ -1,10 +1,8 @@
-const mongoose = require('mongoose');
 const message = require('./model/message.model');
 const room = require('./model/room.model');
 const user = require('./model/user.model');
 
 /* SUPPORT METHODS */
-
 
 // Set socket's name by userId
 const SetSocketName = async (socket, idUser) => {
@@ -35,12 +33,34 @@ const AddMessage = async data => {
 }
 
 const UpdateConversation = async (io, data) => {
-    const userId = data.senderId;
-    const room = `room: ${ data.roomId }`;
-    const convers = await message.FindConversationsOfUser(userId);
-    const latestConver = convers[0];
-    console.log(latestConver);
-    io.to(room).emit('update_conversation', latestConver);
+    const roomId = data.roomId;
+    const room = `room: ${ roomId }`;
+    const msg = await message.FindNewestMessageInRoom(roomId);
+    console.log(msg);
+    io.to(room).emit('update_conversation', msg);
+}
+
+const NotifyMemberLeftRoom = async (io, data) => {
+    try {
+        const userId = data.memberId;
+        const roomId = data.roomId;
+        const time = data.time;
+        const userDisplayName = await user.GetUserDisplayName(userId);
+        const notifyMsg = `${ userDisplayName } left the group`;
+        // This is noti from server so message obj doesnt have senderId
+        const msg = { 
+            roomId: roomId,
+            content: notifyMsg,
+            time: time
+        }
+        // Add new message to db
+        await AddMessage(msg);
+        data.content = notifyMsg;
+        SendMessageBack(io, data);
+        UpdateConversation(io, data);
+    } catch(err) {
+        console.log(err.toString());
+    }
 }
 
 /* SOCKET METHODS */
@@ -79,12 +99,20 @@ const AddUsersToNewRoom = async (io, data) => {
             socket.join(room);
         }
     }
-    //io.to(room).emit('new_room', "New room");
 }
+
+const HandleUserLeaveRoom = async (io, socket, data) => {
+    const room = `room: ${ data.roomId }`;
+    socket.leave(room);
+    await NotifyMemberLeftRoom(io, data);
+}
+
+
 
 module.exports = {
     SetSocketName,
     JoinRooms,
     HandleUserSendMessage,
-    AddUsersToNewRoom
+    AddUsersToNewRoom,
+    HandleUserLeaveRoom
 }

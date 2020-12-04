@@ -9,7 +9,7 @@ const messageSchema = new mongoose.Schema({
         validate: {
             validator: roomId => roomId != null,
             message: "RoomId is null"
-        }
+        },
     },
     content: String,
     time: Date

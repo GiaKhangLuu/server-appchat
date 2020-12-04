@@ -9,7 +9,6 @@ const userRoute = require('./api/route/user.route');
 const roomRoute = require('./api/route/room.route');
 const messageRoute = require('./api/route/message.route');
 const handleSocket = require('./socket.js');
-const { timeLog } = require('console');
 
 const PORT = 3000;
 
@@ -28,31 +27,23 @@ io.on('connection', socket => {
         handleSocket.SetSocketName(socket, userId);
         console.log(`${ new Date().toLocaleTimeString() }: ${ socket.id } - ${ socket.name } has connected`);
         await handleSocket.JoinRooms(socket, userId);
-        //const rooms = io.sockets.adapter.rooms;
-        //var count = 0;
-        //for(var id in rooms) {
-            //if(id.indexOf('room') >= 0) ++count;
-        //}
-        //console.log(count);
+        //console.log(socket.adapter.rooms);
     });
 
     // Add user to new room
     socket.on('create_new_room', data => {
         handleSocket.AddUsersToNewRoom(io, data);
-        //const rooms = io.sockets.adapter.rooms;
-        //var count = 0;
-        //for(var id in rooms) {
-            //if(id.indexOf('room') >= 0) ++count;
-        //}
-        //console.log(count);
+    })
+
+    // User leave room
+    socket.on('leave_room', async data => {
+        await handleSocket.HandleUserLeaveRoom(io, socket, data);
     })
 
     // Handle user send message
     socket.on('user_send_message', async obj => {
         await handleSocket.HandleUserSendMessage(io, obj);
     });
-
-
 
     // Check disconnected
     socket.on('disconnect', reason => {
