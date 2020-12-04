@@ -63,7 +63,8 @@ const FindSingleChat = async (userId, searchedUserId) => {
             { $match: { $and: [
                 { members: mongoose.Types.ObjectId(userId) }, 
                 { members: mongoose.Types.ObjectId(searchedUserId)},
-                { members: { $size: 2 } }
+                { members: { $size: 2 } },
+                { name: "" }
             ] } },
             { $project: { _id: 1 } }
         ])

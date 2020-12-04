@@ -94,6 +94,7 @@ const AddUsersToNewRoom = async (io, data) => {
     // api namespace.connected return an obj contains all sockets connected (version 2.*)
     for(var id in ns.connected) {
         // Id is the id of the socket
+        // Must use ns.connected[id] if use ns.connected.id return undefined
         const socket = ns.connected[id];
         if(members.indexOf(socket.name) >= 0) {
             socket.join(room);
