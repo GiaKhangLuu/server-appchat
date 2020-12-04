@@ -139,9 +139,61 @@ const GetInfoRoom = async userId => {
     }
 }
 
+const FindNewestMessageInRoom = async roomId => {
+    try {
+        const msg = await Message.aggregate([
+            // Stage 1 - get all roomDetails by roomId
+            { $match: { roomId: mongoose.Types.ObjectId(roomId) } },
+            // Stage 2 - find last message time
+            { 
+                $group: {
+                    _id: "$roomId", 
+                    lastMessageTime: { $max: "$time" }, 
+                    contents: { $push: { content: "$content", time: "$time" } } 
+                } 
+            },
+            // Stage 3 - find room name by roomId
+            { 
+                $lookup: {
+                    from: "room", localField: "_id", foreignField: "_id", as: "roomInfo"
+                }
+            },
+            // Stage 4 - get last message and message time
+            { 
+                $project: { 
+                    "roomInfo.name": 1, 
+                    contents: {
+                        $filter: {
+                            input: "$contents",
+                            as: "content",
+                            cond: { $eq: ["$$content.time", "$lastMessageTime"] }
+                        }
+                    }
+                }
+            },
+            // Stage 5 - clean data
+            { 
+                $replaceRoot: { 
+                    newRoot: { 
+                        $mergeObjects: [{ roomId: "$_id" }, { $arrayElemAt: ["$roomInfo", 0] }, { $arrayElemAt: ["$contents", 0] }] 
+                    } 
+                } 
+            },
+            // Stage 6 - sort by time
+            { $sort: { time: -1 } }
+        ]);
+        FormatData(msg);
+        return msg[0];
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = { 
     FindConversationsOfUser,
     GetMessagesInRoom,
     GetInfoRoom,
-    AddMessage
+    AddMessage,
+    FindNewestMessageInRoom
 }
