@@ -190,10 +190,15 @@ const FindNewestMessageInRoom = async roomId => {
     }
 }
 
+const DeleteMessagesInRoom = async roomId => {
+    await Message.deleteMany({ roomId: mongoose.Types.ObjectId(roomId) });
+}
+
 module.exports = { 
     FindConversationsOfUser,
     GetMessagesInRoom,
     GetInfoRoom,
     AddMessage,
-    FindNewestMessageInRoom
+    FindNewestMessageInRoom,
+    DeleteMessagesInRoom
 }

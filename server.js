@@ -27,7 +27,7 @@ io.on('connection', socket => {
         handleSocket.SetSocketName(socket, userId);
         console.log(`${ new Date().toLocaleTimeString() }: ${ socket.id } - ${ socket.name } has connected`);
         await handleSocket.JoinRooms(socket, userId);
-        //console.log(socket.adapter.rooms);
+        console.log(socket.adapter.rooms);
     });
 
     // Add user to new room
@@ -38,6 +38,7 @@ io.on('connection', socket => {
     // User leave room
     socket.on('leave_room', async data => {
         await handleSocket.HandleUserLeaveRoom(io, socket, data);
+        //console.log(socket.adapter.rooms);
     })
 
     // Handle user send message

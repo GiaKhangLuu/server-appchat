@@ -53,10 +53,12 @@ const NotifyMemberLeftRoom = async (io, data) => {
             content: notifyMsg,
             time: time
         }
-        // Add new message to db
+        // Add noti message to db
         await AddMessage(msg);
         data.content = notifyMsg;
+        // Send noti message for members in group
         SendMessageBack(io, data);
+        // Update the conversation of members
         UpdateConversation(io, data);
     } catch(err) {
         console.log(err.toString());
@@ -103,8 +105,18 @@ const AddUsersToNewRoom = async (io, data) => {
 }
 
 const HandleUserLeaveRoom = async (io, socket, data) => {
-    const room = `room: ${ data.roomId }`;
-    socket.leave(room);
+    const socketRoom = `room: ${ data.roomId }`;
+    // Leave socket room
+    socket.leave(socketRoom);
+    const roomId = data.roomId;
+    const searchedRoom = await room.FindRoomById(roomId);
+    // Delete group and all messages in group when members leave all
+    if(searchedRoom.members.length == 0) {
+        room.DeleteRoom(roomId);
+        message.DeleteMessagesInRoom(roomId);
+        return;
+    }
+    // Add noti message and emit to members in group
     await NotifyMemberLeftRoom(io, data);
 }
 

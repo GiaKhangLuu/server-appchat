@@ -77,7 +77,7 @@ const FindSingleChat = async (userId, searchedUserId) => {
 
 const FindMultiMembersRooms = async userId => {
     try {
-        const rooms = Room.aggregate([
+        const rooms = await Room.aggregate([
             { $match: { 
                 $and: [
                        { members: mongoose.Types.ObjectId(userId) },
@@ -119,11 +119,27 @@ const CreateRoom = async (name, members) => {
     return room;
 }
 
+const FindRoomById = async roomId => {
+    try {
+        const room = await Room.findById(roomId);
+        return room;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
+const DeleteRoom = async roomId => {
+    await Room.deleteOne({ _id: mongoose.Types.ObjectId(roomId) });
+}
+
 module.exports = {
     FindAllRoomsOfUser,
     GetMemberDisplayNameInSingleChat,
     FindSingleChat,
     FindMultiMembersRooms,
     RemoveUserFromRoom,
-    CreateRoom
+    CreateRoom,
+    FindRoomById,
+    DeleteRoom
 }
