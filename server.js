@@ -27,12 +27,17 @@ io.on('connection', socket => {
         handleSocket.SetSocketName(socket, userId);
         console.log(`${ new Date().toLocaleTimeString() }: ${ socket.id } - ${ socket.name } has connected`);
         await handleSocket.JoinRooms(socket, userId);
-        console.log(socket.adapter.rooms);
+        //console.log(socket.adapter.rooms);
     });
 
     // Add user to new room
     socket.on('create_new_room', data => {
         handleSocket.AddUsersToNewRoom(io, data);
+    })
+
+    // Notify new room
+    socket.on('notify_new_room', async data => {
+        await handleSocket.NotifyNewRoom(io, data);
     })
 
     // User leave room

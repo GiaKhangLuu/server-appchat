@@ -120,12 +120,16 @@ const HandleUserLeaveRoom = async (io, socket, data) => {
     await NotifyMemberLeftRoom(io, data);
 }
 
-
+const NotifyNewRoom = async (io, data) => {
+    await AddMessage(data);
+    UpdateConversation(io, data);
+}
 
 module.exports = {
     SetSocketName,
     JoinRooms,
     HandleUserSendMessage,
     AddUsersToNewRoom,
-    HandleUserLeaveRoom
+    HandleUserLeaveRoom,
+    NotifyNewRoom
 }
