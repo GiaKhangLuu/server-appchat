@@ -23,4 +23,27 @@ const SearchUserByDisplayName = async (req, resp) => {
     resp.json(users);
 }
 
-module.exports = { GetUser, SearchUserByDisplayName, Login };
+// Add new user
+const InsertUser = async (req, resp) => {
+    const accountName = req.body.accountName;
+    const password = req.body.password;
+    const displayName = req.body.displayName;
+    const phoneNumber = req.body.phoneNumber;
+    const user = await User.InsertUser(accountName, password, displayName, phoneNumber);
+    console.log(user);
+    resp.json(user);
+}
+
+const FindUserByAccountName = async (req, resp) => {
+    const accountName = req.body.accountName;
+    const users = await User.FindUserByAccountName(accountName);
+    resp.json(users);
+}
+
+module.exports = { 
+    GetUser, 
+    SearchUserByDisplayName, 
+    Login,
+    InsertUser,
+    FindUserByAccountName
+};

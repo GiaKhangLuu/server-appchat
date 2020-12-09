@@ -13,4 +13,8 @@ router.post('/getUser', userController.GetUser);
 // JSON response keys: [{ _id, displayName }, ... ]
 router.post('/searchUsers', userController.SearchUserByDisplayName);
 
+router.post('/createUser', userController.InsertUser);
+
+router.post('/searchByAccount', userController.FindUserByAccountName);
+
 module.exports = router;

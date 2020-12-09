@@ -1,9 +1,36 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    displayName: String,
-    accountName: String,
-    password: String
+    displayName: {
+        type: String,
+        unique: true,
+        validate: {
+            validator: displayName => displayName !== "",
+            message: "Display name is not null and empty"
+        }
+    },
+    accountName: {
+        type: String,
+        unique: true,
+        validate: {
+            validator: accountName => accountName !== "",
+            message: "Account name is not null and empty"
+        }
+    },
+    password: {
+        type: String,
+        validate: {
+            validator: pw => pw !== "",
+            message: "Password is not null and empty"
+        }
+    },
+    phoneNumber: {
+        type: String, 
+        validate: {
+            validator: phoneNumber => /^[\d]{10}$/.test(phoneNumber),
+            message: "Phone number is not valid"
+        }
+    }
 }, { versionKey: false });
 
 const User = new mongoose.model('user', userSchema, 'user');
@@ -55,9 +82,36 @@ const GetUserDisplayName = async userId => {
     }
 }
 
+const InsertUser = async (accountName, password, displayName, phoneNumber) => {
+    var user = new User();
+    user.accountName = accountName;
+    user.password = password;
+    user.displayName = displayName;
+    user.phoneNumber = phoneNumber;
+    try {
+        await User.create(user);
+    } catch(err) {
+        console.log(err.toString());
+        return err.toString();
+    }
+    return user;
+}
+
+const FindUserByAccountName = async accountName => {
+    try {
+        const users = await User.find({ accountName: accountName });
+        return users;
+    } catch(err) {
+        console.log(err);
+        return null;
+    }
+}
+
 module.exports = {
     Login,
     GetUserById,
     SearchUserByDisplayName,
-    GetUserDisplayName
+    GetUserDisplayName,
+    InsertUser,
+    FindUserByAccountName    
 }

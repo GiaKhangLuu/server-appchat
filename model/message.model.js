@@ -7,8 +7,8 @@ const messageSchema = new mongoose.Schema({
     roomId: {
         type: mongoose.Types.ObjectId,
         validate: {
-            validator: roomId => roomId != null,
-            message: "RoomId is null"
+            validator: roomId => roomId !== "",
+            message: "RoomId is not empty"
         },
     },
     content: String,
