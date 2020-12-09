@@ -17,4 +17,6 @@ router.post('/createUser', userController.InsertUser);
 
 router.post('/searchByAccount', userController.FindUserByAccountName);
 
+router.post('/updateUser', userController.UpdateUser);
+
 module.exports = router;

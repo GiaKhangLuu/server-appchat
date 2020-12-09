@@ -40,10 +40,21 @@ const FindUserByAccountName = async (req, resp) => {
     resp.json(users);
 }
 
+const UpdateUser = async (req, resp) => {
+    const userId = req.body.userId;
+    const accountName = req.body.accountName;
+    const displayName = req.body.displayName;
+    const password = req.body.password;
+    const phoneNumber = req.body.phoneNumber;
+    const user = await User.UpdateUser(userId, accountName, displayName, password, phoneNumber);
+    resp.json(user);
+}
+
 module.exports = { 
     GetUser, 
     SearchUserByDisplayName, 
     Login,
     InsertUser,
-    FindUserByAccountName
+    FindUserByAccountName,
+    UpdateUser
 };

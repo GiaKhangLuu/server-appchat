@@ -107,11 +107,32 @@ const FindUserByAccountName = async accountName => {
     }
 }
 
+const UpdateUser = async (userId, accountName, displayName, password, phoneNumber) => {
+    const updateObj = {
+        accountName: accountName,
+        displayName: displayName,
+        password: password,
+        phoneNumber: phoneNumber
+    };
+    try {
+        const user = await User.findByIdAndUpdate(
+            userId,
+            updateObj,
+            { new: true, runValidators: true }
+        );
+        return user;
+    } catch(err) {
+        console.log(err.toString());
+        return err.toString();
+    }
+}
+
 module.exports = {
     Login,
     GetUserById,
     SearchUserByDisplayName,
     GetUserDisplayName,
     InsertUser,
-    FindUserByAccountName    
+    FindUserByAccountName,
+    UpdateUser
 }
