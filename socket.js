@@ -1,27 +1,13 @@
 const message = require('./model/message.model');
-const room = require('./model/room.model');
+const Room = require('./model/room.model');
 const user = require('./model/user.model');
 
 /* SUPPORT METHODS */
 
-// Set socket's name by userId
-const SetSocketName = async (socket, idUser) => {
-    socket.name = idUser;
-}
-
 // Get all rooms of user
 const FetchRooms = async userId => {
-    const rooms = await room.FindAllRoomsOfUser(userId);
+    const rooms = await Room.FindAllRoomsOfUser(userId);
     return rooms;
-}
-
-const SendMessageBack = async (io, data) => {
-    const room = `room: ${ data.roomId }`;
-    console.log(`Room: ${ room }`);
-    const userDisplayName = await user.GetUserDisplayName(data.senderId);
-    data.displayName = userDisplayName;
-    io.to(room).emit('new_message', data);
-    console.log(data);
 }
 
 const AddMessage = async data => {
@@ -32,12 +18,46 @@ const AddMessage = async data => {
     await message.AddMessage(senderId, roomId, content, time);
 }
 
-const UpdateConversation = async (io, data) => {
+const SendMessageBack = async (io, data) => {
+    const room = `room: ${ data.roomId }`;
+    //console.log(`Room: ${ room }`);
+    const userDisplayName = await user.GetUserDisplayName(data.senderId);
+    data.displayName = userDisplayName;
+    io.to(room).emit('new_message', data);
+    //console.log(data);
+}
+
+const NotifyNewMessage = async (io, data) => {
     const roomId = data.roomId;
     const room = `room: ${ roomId }`;
     const msg = await message.FindNewestMessageInRoom(roomId);
-    console.log(msg);
+    msg.senderId = data.senderId;
     io.to(room).emit('update_conversation', msg);
+    SendNotification(io, msg);
+}
+
+const SendNotification = async (io, data) => {
+    const roomId = data.roomId;
+    // Get name of sender in case single chat
+    if(data.name === "") {
+        data.name = await user.GetUserDisplayName(data.senderId);
+    }
+    const room = `room: ${ roomId }`;
+    io.to(room).emit('show_notification', data);
+}
+
+const NotifyNewMultiMembersRoomIsCreated = async (socket, data) => {
+    // Update conversation in conversation fragment
+    const roomId = data.roomId;
+    const room = `room: ${ roomId }`;
+    const msg = await message.FindNewestMessageInRoom(roomId);
+    socket.to(room).emit('update_conversation', msg);
+    // Notify new room is created in other fragments or activities
+    msg.senderId = data.senderId;
+    if(msg.name === "") {
+        msg.name = await msg.GetUserDisplayName(data.senderId);
+    }
+    socket.to(room).emit('show_notification', msg);
 }
 
 const NotifyMemberLeftRoom = async (io, data) => {
@@ -59,13 +79,18 @@ const NotifyMemberLeftRoom = async (io, data) => {
         // Send noti message for members in group
         SendMessageBack(io, data);
         // Update the conversation of members
-        UpdateConversation(io, data);
+        NotifyNewMessage(io, data);
     } catch(err) {
         console.log(err.toString());
     }
 }
 
 /* SOCKET METHODS */
+
+// Set socket's name by userId
+const SetSocketName = async (socket, idUser) => {
+    socket.name = idUser;
+}
 
 // Each socket joins to room by roomId
 const JoinRooms = async (socket, userId) => {
@@ -76,13 +101,12 @@ const JoinRooms = async (socket, userId) => {
     });
 }
 
-// Handle when user send message
 const HandleUserSendMessage = async (io, data) => {
-    console.log(`Message: ${ data.content }`);
+    //console.log(`Message: ${ data.content }`);
     try {
         await AddMessage(data);
         SendMessageBack(io, data);
-        UpdateConversation(io, data);
+        NotifyNewMessage(io, data);
     } catch(err) {
         console.log(err.toString());
     }
@@ -109,10 +133,10 @@ const HandleUserLeaveRoom = async (io, socket, data) => {
     // Leave socket room
     socket.leave(socketRoom);
     const roomId = data.roomId;
-    const searchedRoom = await room.FindRoomById(roomId);
+    const searchedRoom = await Room.FindRoomById(roomId);
     // Delete group and all messages in group when members leave all
     if(searchedRoom.members.length == 0) {
-        room.DeleteRoom(roomId);
+        Room.DeleteRoom(roomId);
         message.DeleteMessagesInRoom(roomId);
         return;
     }
@@ -120,9 +144,9 @@ const HandleUserLeaveRoom = async (io, socket, data) => {
     await NotifyMemberLeftRoom(io, data);
 }
 
-const NotifyNewRoom = async (io, data) => {
+const NotifyNewRoom = async (socket, data) => {
     await AddMessage(data);
-    UpdateConversation(io, data);
+    NotifyNewMultiMembersRoomIsCreated(socket, data);
 }
 
 module.exports = {

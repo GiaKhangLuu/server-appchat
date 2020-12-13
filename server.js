@@ -40,7 +40,7 @@ io.on('connection', socket => {
 
     // Notify new room
     socket.on('notify_new_room', async data => {
-        await handleSocket.NotifyNewRoom(io, data);
+        await handleSocket.NotifyNewRoom(socket, data);
     })
 
     // User leave room
