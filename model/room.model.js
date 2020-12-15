@@ -11,9 +11,9 @@ const roomSchema = new mongoose.Schema({
 
 roomSchema.set('toJSON', { virtuals: true });
 
-roomSchema.virtual('formattedCreateDate').get(function () {
-    return moment(this.createDate).format('MMMM Do YYYY, h:mm:ss a');
-})
+//roomSchema.virtual('formattedCreateDate').get(function () {
+    //return moment(this.createDate).format('MMMM Do YYYY, h:mm:ss a');
+//})
 
 const Room = mongoose.model('room', roomSchema, 'room');
 

@@ -17,9 +17,12 @@ const messageSchema = new mongoose.Schema({
 
 messageSchema.set('toJSON', { virtuals: true });
 
-messageSchema.virtual('formattedTime').get(function() {
-    return moment(this.time).format('MMMM Do YYYY, h:mm:ss a');
-})
+//messageSchema.virtual('formattedTime').get(function() {
+    //if(IsToday(this.time)) {
+        //return moment(this.time).format('h:mm a');
+    //}
+    //return moment(this.time).format('MMM Do'); 
+//})
 
 const Message = mongoose.model('message', messageSchema, 'message');
 
@@ -87,9 +90,20 @@ const FindConversationsOfUser = async userId => {
     }
 }
 
+const IsToday = someDate => {
+    const today = new Date();
+    return someDate.getDate() === today.getDate() &&
+            someDate.getMonth() === today.getMonth() &&
+            someDate.getYear() === today.getYear();
+}
+
 const FormatData = arr => {
     for(const item of arr) {
-        item.time =  moment(item.time).format('MMMM Do, hh:mm:ss a');
+        if(IsToday(new Date(item.time))) {
+            item.time =  moment(item.time).format('hh:mm a');
+        } else {
+            item.time = moment(item.time).format('MMM Do')
+        }
     }
 }
 
