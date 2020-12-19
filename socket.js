@@ -149,11 +149,23 @@ const NotifyNewRoom = async (socket, data) => {
     NotifyNewMultiMembersRoomIsCreated(socket, data);
 }
 
+const NotifyTyping = (socket, data) => {
+    const room = `room: ${ data.roomId }`;
+    socket.to(room).emit('typing', data);
+}
+
+const NotifyStopTyping = (socket, data) => {
+    const room = `room: ${ data.roomId }`;
+    socket.to(room).emit('stop_typing', data);
+}
+
 module.exports = {
     SetSocketName,
     JoinRooms,
     HandleUserSendMessage,
     AddUsersToNewRoom,
     HandleUserLeaveRoom,
-    NotifyNewRoom
+    NotifyNewRoom,
+    NotifyTyping,
+    NotifyStopTyping
 }

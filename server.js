@@ -54,6 +54,16 @@ io.on('connection', socket => {
         await handleSocket.HandleUserSendMessage(io, obj);
     });
 
+    // Handle user typing
+    socket.on('typing', data => {
+        handleSocket.NotifyTyping(socket, data);
+    })
+
+    // Handle user stop typing
+    socket.on('stop_typing', data => {
+        handleSocket.NotifyStopTyping(socket, data);
+    })
+
     // Check disconnected
     socket.on('disconnect', reason => {
         console.log(`${ new Date().toLocaleTimeString() }: ${ socket.id } has disconnected because ${ reason }`);
